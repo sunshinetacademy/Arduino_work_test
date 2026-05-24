@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أكاديمية الأردوينو - من 7 إلى 14 سنة</title>
+    <style>
+        :root {
+            --primary: #00979C;
+            --secondary: #E34C26;
+            --dark: #282c34;
+            --light: #f0f4f8;
+            --success: #28a745;
+            --danger: #dc3545;
+            --level1: #4caf50; /* سن 7-9 */
+            --level2: #ff9800; /* سن 10-12 */
+            --level3: #f44336; /* سن 13-14 */
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); min-height: 85vh; }
+        h1, h2, h3 { color: var(--primary); text-align: center; }
+        
+        .screen { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* شاشة 1: تسجيل الدخول */
+        .login-box { text-align: center; margin-top: 15vh; }
+        .login-box input { padding: 15px; width: 50%; font-size: 18px; border: 2px solid var(--primary); border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        
+        /* شاشة 2: القائمة الرئيسية */
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .project-card { background: #fff; border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;}
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .project-card .icon { font-size: 40px; margin-bottom: 10px; }
+        .age-badge { position: absolute; top: 10px; right: -30px; background: var(--primary); color: white; padding: 5px 30px; transform: rotate(45deg); font-size: 12px; font-weight: bold;}
+        
+        /* ألوان التدرج العمري */
+        .age-7-9 { border-top: 5px solid var(--level1); }
+        .age-10-12 { border-top: 5px solid var(--level2); }
+        .age-13-14 { border-top: 5px solid var(--level3); }
+
+        /* شاشة 3: الاختبار */
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; }
+        .game-area { display: flex; gap: 20px; flex-wrap: wrap; }
+        .code-panel { flex: 1; background: var(--dark); color: #abb2bf; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 16px; direction: ltr; text-align: left; white-space: pre-wrap; min-width: 300px; }
+        .board-panel { flex: 1.5; background: #e9ecef; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; min-width: 300px;}
+        
+        .arduino-board { width: 220px; height: 130px; background: var(--primary); border-radius: 10px; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 22px; margin-bottom: 20px; border: 3px solid #006468; }
+        .controls { background: #fff; padding: 20px; border-radius: 8px; width: 100%; box-sizing: border-box;}
+        .pin-select { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border: 1px solid #ddd;}
+        select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; outline: none; width: 120px; }
+        
+        button { background: var(--success); color: white; border: none; padding: 12px 25px; font-size: 18px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        button:hover { filter: brightness(1.1); }
+        button.btn-back { background: #6c757d; }
+        button.btn-block { width: 100%; margin-top: 15px; }
+        
+        .message { margin-top: 15px; padding: 15px; text-align: center; border-radius: 5px; font-weight: bold; display: none; font-size: 18px;}
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .question-text { font-size: 18px; margin-bottom: 15px; font-weight: bold; color: var(--secondary); background: #fff; padding: 10px; border-radius: 5px; border-right: 5px solid var(--secondary); width: 100%; box-sizing: border-box;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="screen1" class="screen active">
+        <div class="login-box">
+            <h1>🤖 أكاديمية الأردوينو للمبتدئين والمحترفين</h1>
+            <p>أدخل اسمك لنبدأ رحلة التعلم من الأساسيات وحتى بناء منزل ذكي!</p>
+            <input type="text" id="studentNameInput" placeholder="اكتب اسمك هنا..." onkeypress="handleEnter(event)">
+            <br>
+            <button onclick="login()">ابدأ التحدي 🚀</button>
+        </div>
+    </div>
+
+    <div id="screen2" class="screen">
+        <div class="header-bar">
+            <h2>مختبر المشاريع</h2>
+            <div style="font-size: 18px; font-weight: bold;">المبرمج: <span id="displayName" style="color: var(--secondary);"></span></div>
+        </div>
+        <p style="text-align: center; color: #666;">المشاريع مرتبة من الأسهل (سن 7) إلى الأصعب (سن 14).</p>
+        <div class="grid-container" id="projectsGrid"></div>
+    </div>
+
+    <div id="screen3" class="screen">
+        <div class="quiz-header">
+            <h2 id="quizTitle" style="margin: 0; color: white;"></h2>
+            <div>السؤال: <span id="qCounter"></span></div>
+            <button class="btn-back" onclick="backToMenu()">🔙 عودة للقائمة</button>
+        </div>
+        
+        <div class="game-area">
+            <div class="code-panel">
+                <div style="color: #e5c07b; margin-bottom: 10px;">// الكود البرمجي:</div>
+                <div id="codeDisplay"></div>
+            </div>
+            <div class="board-panel">
+                <div class="question-text" id="questionText"></div>
+                <div class="arduino-board">Arduino UNO</div>
+                <div class="controls" id="controlsPanel"></div>
+                <button class="btn-block" onclick="checkAnswer()">تحقق من التوصيل ✔️</button>
+                <div id="msgBox" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ==========================================
+    // قاعدة البيانات: 20 مشروع متدرج للأطفال (7 إلى 14 سنة)
+    // ==========================================
+    const db = [
+        // ------------------ المرحلة الأولى (سن 7 - 9 سنوات) ------------------
+        {
+            id: 1, title: "1. وميض الليد", icon: "💡", ageClass: "age-7-9", ageText: "7+",
+            questions: [
+                { text: "السؤال 1: وصل الليد بالمنفذ 13 كما في الكود.", code: "void setup() {\n  pinMode(13, OUTPUT);\n}\nvoid loop() {\n  digitalWrite(13, HIGH);\n}", pins: [{ name: "موجب الليد", correct: "13" }, { name: "سالب الليد", correct: "GND" }] },
+                { text: "السؤال 2: المبرمج غير الكود ليعمل على منفذ 8.", code: "int led = 8;\nvoid setup() {\n  pinMode(led, OUTPUT);\n}", pins: [{ name: "موجب الليد", correct: "8" }, { name: "سالب الليد", correct: "GND" }] },
+                { text: "السؤال 3: هل يمكنك توصيل الليد بمنفذ 2؟", code: "void setup() {\n  pinMode(2, OUTPUT);\n}", pins: [{ name: "موجب الليد", correct: "2" }, { name: "سالب الليد", correct: "GND" }] },
+                { text: "السؤال 4: نريد تشغيل الليد على المنفذ 12.", code: "void setup() {\n  pinMode(12, OUTPUT);\n}", pins: [{ name: "موجب الليد", correct: "12" }, { name: "سالب الليد", correct: "GND" }] },
+                { text: "السؤال 5: الكود يطلب منفذ 5، أوصل الليد.", code: "void setup() {\n  pinMode(5, OUTPUT);\n}", pins: [{ name: "موجب الليد", correct: "5" }, { name: "سالب الليد", correct: "GND" }] }
+            ]
+        },
+        {
+            id: 2, title: "2. جرس الإنذار", icon: "🔔", ageClass: "age-7-9", ageText: "7+",
+            questions: [
+                { text: "السؤال 1: أوصل الجرس على المنفذ 9.", code: "void setup() {\n  pinMode(9, OUTPUT);\n}\nvoid loop() {\n  tone(9, 1000);\n}", pins: [{ name: "موجب الجرس", correct: "9" }, { name: "سالب الجرس", correct: "GND" }] },
+                { text: "السؤال 2: غيرنا المنفذ إلى 4.", code: "const int buzzer = 4;\nvoid setup() {\n  pinMode(buzzer, OUTPUT);\n}", pins: [{ name: "موجب الجرس", correct: "4" }, { name: "سالب الجرس", correct: "GND" }] },
+                // يمكنك إضافة 3 أسئلة هنا لتكتمل 5
+            ]
+        },
+        { id: 3, title: "3. إشارة المرور", icon: "🚦", ageClass: "age-7-9", ageText: "8+", questions: [ { text: "السؤال 1: الأحمر 13، الأصفر 12، الأخضر 11.", code: "int red=13; int yel=12; int grn=11;", pins: [{ name: "الأحمر", correct: "13" }, { name: "الأصفر", correct: "12" }, { name: "الأخضر", correct: "11" }, { name: "السالب المشترك", correct: "GND" }] } ] },
+        { id: 4, title: "4. الزر الضاغط", icon: "🔘", ageClass: "age-7-9", ageText: "8+", questions: [ { text: "السؤال 1: زر على منفذ 2 مع Pull-down.", code: "int btn = 2;\nvoid setup() {\n pinMode(btn, INPUT);\n}", pins: [{ name: "الطاقة", correct: "5V" }, { name: "الإشارة", correct: "2" }, { name: "الأرضي", correct: "GND" }] } ] },
+        { id: 5, title: "5. الزر والليد", icon: "🕹️", ageClass: "age-7-9", ageText: "8+", questions: [ { text: "السؤال 1: الليد بـ 13 والزر بـ 2.", code: "int led=13; int btn=2;", pins: [{ name: "موجب الليد", correct: "13" }, { name: "إشارة الزر", correct: "2" }] } ] },
+        { id: 6, title: "6. المقاومة المتغيرة", icon: "🎛️", ageClass: "age-7-9", ageText: "9+", questions: [ { text: "السؤال 1: اقرأ الإشارة من A0.", code: "int val = analogRead(A0);", pins: [{ name: "الطرف 1", correct: "5V" }, { name: "المنتصف", correct: "A0" }, { name: "الطرف 3", correct: "GND" }] } ] },
+        { id: 7, title: "7. إضاءة خافتة", icon: "✨", ageClass: "age-7-9", ageText: "9+", questions: [ { text: "السؤال 1: استخدام PWM على منفذ 9.", code: "analogWrite(9, 128);", pins: [{ name: "موجب الليد", correct: "9" }, { name: "السالب", correct: "GND" }] } ] },
+
+        // ------------------ المرحلة الثانية (سن 10 - 12 سنة) ------------------
+        {
+            id: 8, title: "8. حساس الضوء (LDR)", icon: "☀️", ageClass: "age-10-12", ageText: "10+",
+            questions: [
+                { text: "السؤال 1: اقرأ قيمة الضوء من المنفذ A1.", code: "int ldrPin = A1;\nint lightVal = analogRead(ldrPin);", pins: [{ name: "الطاقة VCC", correct: "5V" }, { name: "الإشارة", correct: "A1" }, { name: "الأرضي GND", correct: "GND" }] },
+                { text: "السؤال 2: غيرنا المنفذ إلى A2.", code: "int ldrPin = A2;", pins: [{ name: "الطاقة VCC", correct: "5V" }, { name: "الإشارة", correct: "A2" }, { name: "الأرضي GND", correct: "GND" }] },
+                // يمكن إضافة الباقي هنا
+            ]
+        },
+        { id: 9, title: "9. الإضاءة الذكية", icon: "🌃", ageClass: "age-10-12", ageText: "10+", questions: [ { text: "السؤال 1: LDR بـ A0 والليد بـ 13.", code: "if(analogRead(A0) < 500) digitalWrite(13, HIGH);", pins: [{ name: "إشارة LDR", correct: "A0" }, { name: "الليد", correct: "13" }] } ] },
+        { id: 10, title: "10. محرك السيرفو", icon: "🤖", ageClass: "age-10-12", ageText: "10+", questions: [ { text: "السؤال 1: السيرفو متصل بـ 9.", code: "myservo.attach(9);", pins: [{ name: "الأحمر", correct: "5V" }, { name: "البني", correct: "GND" }, { name: "البرتقالي", correct: "9" }] } ] },
+        { id: 11, title: "11. حساس المسافة", icon: "🦇", ageClass: "age-10-12", ageText: "11+", questions: [ { text: "السؤال 1: Trig بـ 10 و Echo بـ 11.", code: "int trig=10; int echo=11;", pins: [{ name: "Trig", correct: "10" }, { name: "Echo", correct: "11" }, { name: "VCC", correct: "5V" }, { name: "GND", correct: "GND" }] } ] },
+        { id: 12, title: "12. رادار الإنذار", icon: "📡", ageClass: "age-10-12", ageText: "11+", questions: [ { text: "السؤال 1: حساس مسافة مع جرس بـ 8.", code: "int trig=10; int echo=11; int buzzer=8;", pins: [{ name: "Trig", correct: "10" }, { name: "Echo", correct: "11" }, { name: "موجب الجرس", correct: "8" }] } ] },
+        { id: 13, title: "13. حساس الحركة", icon: "🏃", ageClass: "age-10-12", ageText: "11+", questions: [ { text: "السؤال 1: مخرج حساس PIR بمنفذ 7.", code: "int pirPin = 7;\nint motion = digitalRead(pirPin);", pins: [{ name: "VCC", correct: "5V" }, { name: "OUT", correct: "7" }, { name: "GND", correct: "GND" }] } ] },
+        { id: 14, title: "14. إنذار السرقة", icon: "🚨", ageClass: "age-10-12", ageText: "12+", questions: [ { text: "السؤال 1: حساس حركة 7، وجرس 8.", code: "if(digitalRead(7) == HIGH) tone(8, 1000);", pins: [{ name: "PIR OUT", correct: "7" }, { name: "الجرس", correct: "8" }] } ] },
+        
+        // ------------------ المرحلة الثالثة (سن 13 - 14 سنة - مشاريع معقدة) ------------------
+        { id: 15, title: "15. ليد الألوان RGB", icon: "🌈", ageClass: "age-13-14", ageText: "12+", questions: [ { text: "السؤال 1: أحمر 11، أخضر 10، أزرق 9.", code: "int R=11, G=10, B=9;", pins: [{ name: "الأحمر", correct: "11" }, { name: "الأخضر", correct: "10" }, { name: "الأزرق", correct: "9" }, { name: "المشترك", correct: "GND" }] } ] },
+        { id: 16, title: "16. محرك DC", icon: "⚙️", ageClass: "age-13-14", ageText: "13+", questions: [ { text: "السؤال 1: الترانزستور بـ 3.", code: "int motorPin = 3;\nanalogWrite(motorPin, 200);", pins: [{ name: "قاعدة الترانزستور", correct: "3" }, { name: "باعث الترانزستور", correct: "GND" }] } ] },
+        { id: 17, title: "17. حساس الحرارة", icon: "🌡️", ageClass: "age-13-14", ageText: "13+", questions: [ { text: "السؤال 1: حساس DHT11 بـ 2.", code: "#define DHTPIN 2", pins: [{ name: "VCC", correct: "5V" }, { name: "Data", correct: "2" }, { name: "GND", correct: "GND" }] } ] },
+        { id: 18, title: "18. شاشة I2C LCD", icon: "📺", ageClass: "age-13-14", ageText: "13+", questions: [ { text: "السؤال 1: توصيل بروتوكول I2C.", code: "LiquidCrystal_I2C lcd(0x27,16,2);", pins: [{ name: "SDA", correct: "A4" }, { name: "SCL", correct: "A5" }, { name: "VCC", correct: "5V" }, { name: "GND", correct: "GND" }] } ] },
+        { id: 19, title: "19. المروحة الذكية", icon: "❄️", ageClass: "age-13-14", ageText: "14+", questions: [ { text: "السؤال 1: حرارة بـ 2 ومحرك بـ 3.", code: "if(temp > 30) digitalWrite(3, HIGH);", pins: [{ name: "Data حساس", correct: "2" }, { name: "محرك المروحة", correct: "3" }] } ] },
+        {
+            id: 20, title: "20. المنزل الذكي", icon: "🏠", ageClass: "age-13-14", ageText: "14+",
+            questions: [
+                { text: "السؤال 1: نظام الدخول: حساس مسافة (Trig 10, Echo 11) وسيرفو للباب (9).", code: "int trig=10; int echo=11; myservo.attach(9);", pins: [{ name: "Trig", correct: "10" }, { name: "Echo", correct: "11" }, { name: "إشارة السيرفو", correct: "9" }] },
+                { text: "السؤال 2: نظام الإضاءة: LDR بـ A0 وليد بـ 13.", code: "if(analogRead(A0)<400) digitalWrite(13,HIGH);", pins: [{ name: "LDR", correct: "A0" }, { name: "الليد", correct: "13" }] },
+                { text: "السؤال 3: إنذار الحريق: حساس غاز بـ A1 وجرس بـ 8.", code: "if(analogRead(A1)>300) tone(8,1000);", pins: [{ name: "حساس الغاز", correct: "A1" }, { name: "موجب الجرس", correct: "8" }] },
+                { text: "السؤال 4: نظام التبريد: حساس حرارة بـ 2 ومروحة بـ 3.", code: "if(dht.readTemperature()>30) digitalWrite(3,HIGH);", pins: [{ name: "داتا الحرارة", correct: "2" }, { name: "إشارة المروحة", correct: "3" }] },
+                { text: "السؤال 5: شاشة البيانات: شاشة LCD لعرض الحالة.", code: "lcd.print(\"Smart Home OK\");", pins: [{ name: "SDA", correct: "A4" }, { name: "SCL", correct: "A5" }] }
+            ]
+        }
+    ];
+
+    let studentName = "";
+    let currentProjectIndex = -1;
+    let currentQuestionIndex = 0;
+    const arduinoPins = ["اختر...", "5V", "3.3V", "GND", "A0", "A1", "A2", "A3", "A4", "A5", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"];
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function handleEnter(e) { if(e.key === 'Enter') login(); }
+
+    function login() {
+        const input = document.getElementById('studentNameInput').value.trim();
+        if(input === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
+        studentName = input;
+        document.getElementById('displayName').innerText = studentName;
+        renderMenu();
+        showScreen('screen2');
+    }
+
+    function backToMenu() { showScreen('screen2'); }
+
+    function renderMenu() {
+        const grid = document.getElementById('projectsGrid');
+        grid.innerHTML = "";
+        db.forEach((proj, index) => {
+            const card = document.createElement('div');
+            card.className = `project-card ${proj.ageClass}`;
+            card.innerHTML = `
+                <div class="age-badge">${proj.ageText}</div>
+                <div class="icon">${proj.icon}</div>
+                <h3>${proj.title}</h3>
+                <p style="color:#666;">${proj.questions.length} أسئلة برمجية</p>
+            `;
+            card.onclick = () => startProject(index);
+            grid.appendChild(card);
+        });
+    }
+
+    function startProject(index) {
+        currentProjectIndex = index;
+        currentQuestionIndex = 0;
+        loadQuestion();
+        showScreen('screen3');
+    }
+
+    function loadQuestion() {
+        const project = db[currentProjectIndex];
+        const question = project.questions[currentQuestionIndex];
+        
+        document.getElementById('quizTitle').innerText = project.title;
+        document.getElementById('qCounter').innerText = `${currentQuestionIndex + 1} / ${project.questions.length}`;
+        document.getElementById('codeDisplay').innerText = question.code;
+        document.getElementById('questionText').innerText = question.text;
+        
+        const controls = document.getElementById('controlsPanel');
+        controls.innerHTML = "";
+        document.getElementById('msgBox').style.display = 'none';
+
+        question.pins.forEach((pin, i) => {
+            const div = document.createElement('div');
+            div.className = 'pin-select';
+            div.innerHTML = `<span>وصل <b>${pin.name}</b> بـ:</span>`;
+            
+            const select = document.createElement('select');
+            select.id = `select_${i}`;
+            
+            arduinoPins.forEach(ap => {
+                const option = document.createElement('option');
+                option.value = ap;
+                option.innerText = ap;
+                select.appendChild(option);
+            });
+            div.appendChild(select);
+            controls.appendChild(div);
+        });
+    }
+
+    function checkAnswer() {
+        const project = db[currentProjectIndex];
+        const question = project.questions[currentQuestionIndex];
+        let isCorrect = true;
+
+        question.pins.forEach((pin, i) => {
+            if (document.getElementById(`select_${i}`).value !== pin.correct) {
+                isCorrect = false;
+            }
+        });
+
+        const msgBox = document.getElementById('msgBox');
+        msgBox.style.display = 'block';
+
+        if (isCorrect) {
+            msgBox.className = 'message success';
+            if (currentQuestionIndex < project.questions.length - 1) {
+                msgBox.innerHTML = "✅ ممتاز! إجابة صحيحة. جاري تجهيز السؤال التالي...";
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 2000);
+            } else {
+                msgBox.innerHTML = "🏆 أحسنت يا بطل! لقد أنهيت هذا المشروع بنجاح.";
+                setTimeout(() => { backToMenu(); }, 2500);
+            }
+        } else {
+            msgBox.className = 'message error';
+            msgBox.innerHTML = "❌ هناك خطأ في التوصيل.. راجع الكود البرمجي جيداً والمنافذ المطلوبة!";
+        }
+    }
+</script>
+
+</body>
+</html>
